@@ -28,7 +28,8 @@ public class VerificationCode {
 	private Date created; // 발급된 날짜
 	
 	private String state; // 인증 상태
-
+	
+	private Date expired;
 	
 	/**사용자의 이메일과 보안코드 인증상태를 db에 저장하는 사용자*/
 	public VerificationCode(String code, String email, String state) {

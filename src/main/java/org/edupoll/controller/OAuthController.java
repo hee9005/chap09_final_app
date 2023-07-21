@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
-@CrossOrigin("http://192.168.4.107:3000")
+@CrossOrigin
 @RequestMapping("/api/v1/oauth")
 public class OAuthController {
 	

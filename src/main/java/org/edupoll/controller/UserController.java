@@ -39,7 +39,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@CrossOrigin("http://192.168.4.107:3000")
+@CrossOrigin
 @RequestMapping("/api/v1/user")
 @Slf4j
 public class UserController {
