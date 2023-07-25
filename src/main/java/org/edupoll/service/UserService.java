@@ -20,9 +20,13 @@ import org.edupoll.model.dto.request.UpdateProfileRequest;
 import org.edupoll.model.dto.request.UserCreateRequestData;
 import org.edupoll.model.dto.request.UserPasswordModify;
 import org.edupoll.model.dto.request.userPasswordRequest;
+import org.edupoll.model.entity.Feed;
+import org.edupoll.model.entity.FeedAttach;
 import org.edupoll.model.entity.ProfileImage;
 import org.edupoll.model.entity.User;
 import org.edupoll.model.entity.VerificationCode;
+import org.edupoll.repository.FeedAttachRepository;
+import org.edupoll.repository.FeedRepository;
 import org.edupoll.repository.ProfileImageRepository;
 import org.edupoll.repository.UserRepository;
 import org.edupoll.repository.VerificationCodeRepository;
@@ -62,7 +66,13 @@ public class UserService {
 
 	@Autowired
 	ProfileImageRepository profileImageRepository;
+	
+	@Autowired
+	FeedRepository feedRepository;
 
+	@Autowired
+	FeedAttachRepository feedAttachRepository;
+	
 	@Transactional
 	public void deleteSpecificSocialUser(String userEmail) throws NotExistUserException {
 		var user = userRepository.findByEmail(userEmail).orElseThrow(() -> new NotExistUserException());
@@ -124,13 +134,17 @@ public class UserService {
 	@Transactional
 	public void deleteSpecificUser(String userEmail, userPasswordRequest req)
 			throws NotExistUserException, InvalidPasswordException {
+		
 		var user = userRepository.findByEmail(userEmail).orElseThrow(() -> new NotExistUserException());
-
+		var feeds = feedRepository.findByWiter(user);
 		if (!user.getPassword().equals(req.getPassword())) {
 
 			throw new InvalidPasswordException();
 		}
-
+		for(Feed fees : feeds) {
+			feedAttachRepository.deleteAllByfeedId(fees.getId());
+		}
+		feedRepository.deleteAllByWiter(user);
 		userRepository.delete(user);
 		verificationCodeRepository.deleteByEmail(userEmail);
 	}

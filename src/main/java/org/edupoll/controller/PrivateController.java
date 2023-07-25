@@ -27,10 +27,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.transaction.NotSupportedException;
+import lombok.extern.slf4j.Slf4j;
 
 @RequestMapping("/api/v1/user/private")
 @CrossOrigin
 @RestController
+@Slf4j
 public class PrivateController {
 	@Autowired
 	UserService userService;
@@ -51,13 +53,12 @@ public class PrivateController {
 	
 	@DeleteMapping
 	public ResponseEntity<Void> deleteUserHandle(@AuthenticationPrincipal String principal,userPasswordRequest req) throws InvalidPassword, InvalidPasswordException, NotExistUserException {
-		String emailTokenValue = jwtService.verifyToken(principal);
-		if( emailTokenValue.endsWith("@kakao.user")) { // 소셜로 가입한 유저 삭제하기
+		if( principal.endsWith("@kakao.user")) { // 소셜로 가입한 유저 삭제하기
 			// 카카오에서 unlink 요청하기
-			kakaoAPIService.sendUnlink(emailTokenValue);
+			kakaoAPIService.sendUnlink(principal);
 			// DB에서 데이터 삭제하기
 		}else {
-			userService.deleteSpecificUser(emailTokenValue,req);			
+			userService.deleteSpecificUser(principal,req);			
 		}
 	
 		return new ResponseEntity<Void>(HttpStatus.OK);
