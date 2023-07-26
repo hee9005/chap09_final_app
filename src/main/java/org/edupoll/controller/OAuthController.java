@@ -5,6 +5,7 @@ import org.edupoll.model.dto.kakaoAccessTokenWeapper;
 import org.edupoll.model.dto.request.ValidateKakaoRequest;
 import org.edupoll.model.dto.request.kakaoAuthorizeCallbackRequest;
 import org.edupoll.model.dto.response.OAuthSignResponse;
+import org.edupoll.model.dto.response.ValidateSingResponse;
 import org.edupoll.model.dto.response.ValidateUserResponse;
 import org.edupoll.service.JwtService;
 import org.edupoll.service.UserService;
@@ -55,7 +56,7 @@ public class OAuthController {
 
 		// 카카오 인증코드로 사용자 정보얻어내는 API 완료
 	@PostMapping("/kakao")
-	public ResponseEntity<ValidateUserResponse> oauthKakaoPostHandle(ValidateKakaoRequest req) 
+	public ResponseEntity<ValidateSingResponse> oauthKakaoPostHandle(ValidateKakaoRequest req) 
 				throws JsonMappingException, JsonProcessingException {
 		kakaoAccessTokenWeapper wrapper =kakaoAPIService.getAccessToken(req.getCode());
 		KakaoAccount account =kakaoAPIService.getUserInfo(wrapper.getAccessToken());
@@ -63,7 +64,7 @@ public class OAuthController {
 		
 		log.info("kakao = {}", account.toString() );
 		String token = jwtService.createToken(account.getEmail());
-		ValidateUserResponse response = new ValidateUserResponse(200, token, account.getEmail());
+		ValidateSingResponse response = new ValidateSingResponse(200,"kakaoAuth",token, account.getEmail());
 		return new ResponseEntity<>(response , HttpStatus.OK);
 	}
 }
